@@ -30,6 +30,18 @@ cons_write_done:                # Something that is called will never return
                                 # not give a program any structure.  They just give a 
                                 # memory location a name that we can use in our code. 
 
+cons_write_crlf:
+    movb    $0x0d, %al          # Carriage return
+    movb    $0x0e, %ah          # Print character to screen
+    movb    $0x0a, %al          # Line feed
+    movb    $0x0e, %ah          # Print character to screen
+    ret
+
+cons_writeline:
+    call cons_write             # Output value in AL to screen
+    call cons_write_crlf        # Carriage return line feed
+    ret
+
 real_start:
     cli                         # BIOS enabled interrupts; disable
 
@@ -41,7 +53,7 @@ real_start:
 
     movw    $0, %sp             # Set the stack to the top of the segment
     movw    $boot_message, %si  # Display our boot message
-    call    cons_write
+    call    cons_writeline
 
 endless_loop:                   # Loop forever more
     jmp     endless_loop    
